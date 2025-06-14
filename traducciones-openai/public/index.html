@@ -10,6 +10,33 @@
 
 <body>
 
+    <header class="chat_header">
+        <h1 class="chat_title">Chat de traducciones</h1>
+    </header>
+
+    <section class="chat_section">
+        <div class="chat_messages">
+            <!-- cargar los mensajes -->
+        </div>
+
+        <div class="chat_input">
+            <input type="text" id="inputText" class="chat_input_text" placeholder="Que quieres traducir hoy?">
+            
+            <div class="chat_inputs">
+                <select id="fromLanguage" class="chat_input_select">
+                    <option value="ingles">Inglés</option>
+                    <option value="español">Español</option>
+                    <option value="frances">Frances</option>
+                    <option value="aleman">Aleman</option>
+                    <option value="italiano">Italiano</option>
+                </select>
+                
+                <button id="sendButton" class="chat_button">traducir</button>
+            </div>
+
+        </div>
+    </section>
+
 
     <script src="./assets/js/main.js"></script>
 </body>
