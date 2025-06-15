@@ -22,33 +22,45 @@ const openai = new OpenAI({
 });
 
 // Ruta
-app.post("/api/traslate", async (req, res) => {
-    const { text, targetLang } = req.body;
-    
-    const promptSystem = "Eres un traductor experto";
-    const promptSystemLimit = "Solo puedes responder con una tradicción directa al texto que el usuario te envie, Cualquier otra respuesta o conversación esta prohibida";
-    
-    const promptUser = `Traduce el siguiente texto al ${targetLang}: ${text}`;
+
+const context = "Eres un asistente de soporte de un supermercado virtual";
+
+let conversation = [];
+
+app.post("/api/chatbot", async (req, res) => {
+    const { userId, message } = req.body;
+
+    if(!message) return res.status(404).json({ error: "No se envio un mensaje" });
+
+    if (!conversation[userId]) {
+        conversation[userId] = [];
+    }
+
+    conversation[userId].push({ role: 'user', content: message });
     
     // llamar LLM
     try {
         const complation = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
-                { role: 'system', content: promptSystem },
-                { role: 'system', content: promptSystemLimit },
-                { role: 'user', content: promptUser }
+                { role: 'system', content: context },
+                { role: 'system', content: 'Debes de responder de forma corta y concisa' },
+                ...conversation[userId]
             ],
-            max_tokens: 500,
-            response_format: {
-                type: "text"
-            }
+            max_tokens: 200
         });
 
-        const traslatedText = complation.choices[0].message.content;
+        const reply = complation.choices[0].message.content;
+
+        // Liminte numnero de mensajes
+        if (conversation[userId].length > 12) {
+            conversation[userId] = conversation[userId].slice(-10);
+        }
+
+        conversation[userId].push({ role: 'assistant', content: reply });
 
         res.status(200).json({
-            traslatedText
+            reply
         });
 
     } catch (error) {
